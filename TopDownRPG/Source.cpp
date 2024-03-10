@@ -15,7 +15,11 @@ int main()
 	const float mapScale{ 2.0 };
 
 	Character knight(windowWidth, windowHeight);
-	Prop rock{ LoadTexture("nature_tileset/Rock.png"), Vector2{0.f,0.f} };
+
+	Prop props[2]{
+		Prop{ LoadTexture("nature_tileset/Rock.png"), Vector2{600.f,300.f} },
+		Prop{ LoadTexture("nature_tileset/Log.png"), Vector2{400.f,500.f} }
+	};
 
 	SetTargetFPS(60);
 	while (!WindowShouldClose())
@@ -24,17 +28,27 @@ int main()
 		ClearBackground(WHITE);
 
 		mapPos = Vector2Scale(knight.getWorldPos(), -1.f);
-
 		//draw map
 		DrawTextureEx(levelMap, mapPos, 0.0, mapScale, WHITE);
 
-		rock.Render(knight.getWorldPos());
+		for (auto prop : props)
+		{
+			prop.Render(knight.getWorldPos());
+		}
+
 		knight.tick(GetFrameTime());
+
+		//check map bounds
 		if (knight.getWorldPos().x < 0.f || knight.getWorldPos().y < 0.f ||
 			knight.getWorldPos().x + windowWidth > levelMap.width * mapScale ||
 			knight.getWorldPos().y + windowHeight > levelMap.height * mapScale)
 		{
 			knight.undoMovement();
+		}
+		//prop collisions
+		for (auto prop : props)
+		{
+			if (CheckCollisionRecs(prop.getCollisionRect(knight.getWorldPos()), knight.getCollisionRect())) knight.undoMovement();
 		}
 
 		EndDrawing();
