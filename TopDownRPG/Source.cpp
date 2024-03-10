@@ -4,6 +4,7 @@
 #include "Prop.h"
 #include "Enemy.h"
 
+
 int main()
 {
 	int windowWidth{ 500 };
@@ -21,6 +22,7 @@ int main()
 		LoadTexture("Characters/goblin_idle_spritesheet.png"),
 		LoadTexture("Characters/goblin_run_spritesheet.png")
 	};
+	goblin.setTarget(&knight);
 
 	Prop props[2]{
 		Prop{ LoadTexture("nature_tileset/Rock.png"), Vector2{600.f,300.f} },

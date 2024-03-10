@@ -1,39 +1,25 @@
 #include "Enemy.h"
 
-Enemy::Enemy(Vector2 pos, Texture2D idle_texture, Texture2D run_texture) : worldPos(pos), texture(idle_texture), idle(idle_texture), run(run_texture)
+Enemy::Enemy(Vector2 pos, Texture2D idle_texture, Texture2D run_texture)
 {
+	worldPos = pos;
+	texture = idle_texture;
+	idle = idle_texture;
+	run = run_texture;
 	width = texture.width / maxFrames;
 	height = texture.height;
+	speed = 2.f;
+}
+
+Vector2 Enemy::getScreenPos()
+{
+	return Vector2Subtract(worldPos, target->getWorldPos());
 }
 
 void Enemy::tick(float deltaTime)
 {
-	worldPosLastFrame = worldPos;
-
-	runningTime += deltaTime;
-	if (runningTime >= updateTime)
-	{
-		frame++;
-		runningTime = 0.f;
-		if (frame > maxFrames) frame = 0;
-	}
-	//draw
-	Rectangle source{ frame * width , 0.f, rightLeft * width, height };
-	Rectangle dest{ screenPos.x, screenPos.y, scale * width, scale * height };
-	DrawTexturePro(texture, source, dest, Vector2{ 0.0,0.0 }, 0.f, WHITE);
+	velocity = Vector2Subtract(target->getScreenPos(), getScreenPos());
+	BaseCharacter::tick(deltaTime);
 }
 
-void Enemy::undoMovement()
-{
-	worldPos = worldPosLastFrame;
-}
 
-Rectangle Enemy::getCollisionRect()
-{
-	return Rectangle{
-			screenPos.x,
-			screenPos.y,
-			width * scale,
-			height * scale
-	};
-}
